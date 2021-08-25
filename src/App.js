@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import i18next from 'i18next';
+import cookie from 'js-cookie';
 
 const language = [
   {
@@ -16,7 +17,8 @@ const language = [
   {
     code: 'ar',
     name: 'العربية',
-    country_code: 'sa'
+    country_code: 'sa',
+    dir: 'rtl'
   },
   {
     code: 'uz',
@@ -32,11 +34,18 @@ const  GlobeIcon = ({width = 24, height = 24}) => (
 )
 
 function App() {
-  
+  const currentLanguageCode = cookie.get('i18next') || 'ar'
+  const currentLanguage = language.find(l => l.code === currentLanguageCode)
   const {t} = useTranslation()
   const releaseDate = new Date('2021-08-22')
   const timeDifference = new Date() - releaseDate
   const number_of_days = Math.floor(timeDifference / (100 * 60 * 60 * 24))
+
+  useEffect(() => {
+    
+    document.body.dir = currentLanguage.dir || 'ltr'
+    document.title = t('app_title')
+  }, [currentLanguage, t])
 
   return (
     <div className="container">
@@ -46,13 +55,21 @@ function App() {
             <GlobeIcon />
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+           <li>
+             <span className='dropdown-item-text'>{t('language')}</span>
+           </li>
               {language.map(({code, name, country_code}) => (
                 <li key={country_code}>
                    <button 
                     className='dropdown-item'
                     onClick={() => i18next.changeLanguage(code)}
+                    disabled={code === currentLanguageCode}
                     >
-                     <span className={`flag-icon flag-icon-${country_code}`}></span>&nbsp;
+                     <span 
+                      className={`flag-icon flag-icon-${country_code}`}
+                      style={{opacity: code === currentLanguageCode? .5 : 1}}  
+                    >
+                      </span>&nbsp;
                      {name}
                     </button>
                 </li>

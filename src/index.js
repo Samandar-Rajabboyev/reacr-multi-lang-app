@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -18,19 +18,26 @@ i18n
     supportedLngs: ['en', 'fr', 'ar', 'uz'],
     fallbackLng: "en",
     detection: {
-      order: [ 'cookie', 'htmlTag', 'localStorage',  'subdomain', 'path'],
+      order: ['path', 'cookie', 'htmlTag', 'localStorage',  'subdomain' ],
       caches: ['cookie']
     },
     backend: {
       loadPath: '/assets/locales/{{lng}}/translation.json'
     },
-    react: {useSuspense: false}
+    // react: {useSuspense: false}
   });
 
+  const loading =  (
+    <div class="spinner-border d-flex justify-content-center" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  )
 
 ReactDOM.render(
+  <Suspense fallback={loading}>
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
+  </React.StrictMode>
+  </Suspense>,
   document.getElementById('root')
 );
